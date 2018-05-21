@@ -1,0 +1,17 @@
+#客户端用
+
+#coding = utf-8
+
+from socket import *
+
+udpSocket = socket(AF_INET,SOCK_DGRAM)
+
+sendAddr = ('192.168.0.101',8080)
+
+sendMessage = raw_input("input message")
+
+udpSocket.sendto(sendMessage,sendAddr)
+
+recvMessage = udpSocket.recvfrom(1024)  #1024 最大接收字节数
+
+udpSocket.close()
