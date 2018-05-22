@@ -4,6 +4,7 @@
 from socket import *
 from time import ctime
 import re
+import threading    #预留位，多线程完成全双工传输
 
 udpSocket = socket(AF_INET,SOCK_DGRAM)
 
@@ -25,6 +26,7 @@ while True:
       udpSocket.sendto('hi,ping success', sendAddr)
       print('send ok')
   else:
-     
+      print('[%s] %s:%s'%(ctime(),recvMessage[1][0],recvMessage[0]))
+      #recvMessage[1]是 192.168.0.101，8080 （元组？）
 
 udpSocket.close()
