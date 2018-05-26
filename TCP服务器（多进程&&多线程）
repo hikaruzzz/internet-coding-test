@@ -2,7 +2,7 @@
 
 from socket import *
 from multiprocessing import *
-from time import sleep
+from threading import Thread
 
 #获取本机ip
 def get_host_ip():
@@ -44,11 +44,19 @@ def main():
             print("---connected,from:%s---"%str(destAddr))
 
             client = Process(target=forClient,args=(newSocket,destAddr))
+
+            #多线程语句，以下一条-------------------
+            #client = Thread(target=forClient,args=(newSocket,destAddr))
+
             client.start()
-            #子进程copy一份新的newSocket,所以主进程中的newSocket可以关闭等待新的进程
-            newSocket.close()
+            
+            
+            #多进程时   子进程copy一份新的newSocket,所以主进程中的newSocket可以关闭等待新的进程，newSocket 用于接收destAddr...
+            #多线程时   这条语句删掉，线程会共享套接字，不能close
+            newSocket.close() 
 
     finally:
+        #serverSocket用于接收新的客户
         serverSocket.close() #!!!!!!!!!!!!!
 
 if __name__ == '__main__':
