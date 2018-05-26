@@ -1,0 +1,56 @@
+from socket import *
+import time
+#1.创建socket
+s = socket(AF_INET,SOCK_STREAM)
+
+#2.绑定ip，port
+localAddr = ('',1818)
+s.bind(localAddr)
+
+#3.把socket改为 非堵塞
+s.setblocking(False)
+
+#4.把socket改为监听（被动）套接字
+s.listen(5)
+
+#保存所有客户端
+clientAddrList = []
+
+num = 0
+while True:
+
+    #try - else 用于循环接收新客户端
+    try:
+        #等待客户端来（完成3次握手的客户端）
+        
+        if num == 0:
+            print('等待链接------')
+            num += 1
+        elif num == 1:
+            print('等待链接 x x x')
+            num -=1
+        time.sleep(1)      
+     
+        newS,clientAddr = s.accept() #已经改成非堵塞socket，若没有接收到客户端则异常，转到excpet
+
+    except: #异常则except
+        pass
+    else: #没有异常则else
+        print('新客户端：%s'%str(clientAddr))
+        clientAddrList.append((newS,clientAddr)) #while接收新客户端
+
+    #########################################
+
+    #for语句用于循环接收信息，每次while就把所有客户端都接收一遍
+    for clientSocket,clientAddr in clientAddrList:  #clientSocket即newS
+        try:
+            recvData = clientSocket.recv(1024)
+        except:
+            pass
+        else:
+            if len(recvData)>0:
+                print("from:%s say:%s"%(str(clientAddr),recvData)) #注意clientAddr要改为str
+            else:
+                clientSocket.close()
+                clientAddrList.remove((clientSocket,clientAddr))
+                print("%s已经下线"%str(clientAddr))
