@@ -1,0 +1,47 @@
+#coding = utf-8
+
+from socket import *
+
+
+def get_host_ip():
+    s = socket(AF_INET,SOCK_DGRAM)
+    try:
+        s.connect(('114.114.114.114',80))
+        ip = s.getsockname()[0]
+        return ip
+    finally:
+        pass
+
+serverSocket = socket(AF_INET,SOCK_STREAM)
+
+hostIP = get_host_ip()
+print('present IP:%s'%hostIP)
+
+maxSock = input("input max connect num:")
+
+addr = ('',80)
+serverSocket.bind(addr)
+
+serverSocket.listen(int(maxSock))
+
+
+while True:
+    print("---waitting connect---")
+    newSocket,destAddr = serverSocket.accept()
+
+    # 多线程预留位
+
+    print("---connected,from:%s---"%str(destAddr))
+    try:
+        while True:
+            recvData = newSocket.recv(1024) #!!!!!!!!!!!!
+            if len(recvData)>0:
+                print('from:%s say:%s'%(str(destAddr),recvData))
+            else:
+                print('%s already disconnected'%str(destAddr))
+                break
+
+    finally:
+        newSocket.close() #!!!!!!!!!!!!!
+
+serverSocket.close()
