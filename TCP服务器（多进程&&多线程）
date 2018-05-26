@@ -51,8 +51,8 @@ def main():
             client.start()
             
             
-            #多进程时   子进程copy一份新的newSocket,所以主进程中的newSocket可以关闭等待新的进程，newSocket 用于接收destAddr...
-            #多线程时   这条语句删掉，线程会共享套接字，不能close
+            #多进程（copy新代码运行）   子进程copy一份新的newSocket,所以主进程中的newSocket可以关闭等待新的进程，newSocket 用于接收destAddr...
+            #多线程（只是引用）    这条语句删掉，线程会共享套接字，不能close
             newSocket.close() 
 
     finally:
