@@ -1,0 +1,42 @@
+
+import sys
+from socket import *
+from select import *
+
+server = socket(AF_INET,SOCK_STREAM)
+server.bind('',1818)
+server.listen(5)
+
+inputs = [server]  #用于检测套接字 是否可以接收数据
+writes = []   #用于检测是否可发数据，列表里面为空即不去检测，若有元素则一个个去检测（select规则）
+exceptionals = []  #用于检测是否有异常
+
+running = True
+
+while True:
+
+  #调用select函数，堵塞，等待inputs,writes,exceptionals列表里面的元素，若其中一个able则跳出阻塞
+  #例：连接一个客户端之后，inputs中有一个server和connect的套接字，这样select就会检测这两个，
+  #但客户发送信息时，只有connect套接字会收到信息，所以select只返回connect（connect是客户端套接字）
+  #server套接字是可监听的，即只有server可以收到新客户端的连接，而connect不行（只能接受信息）
+  
+  readable,writeable,exceptional = select(inputs,writes,exceptionals)
+  
+  #select函数，若检测到有连接，则返回相应socket（所有able的），组成一个列表
+  #遍历列表
+  for sock in readable:
+    if socket == server:  #第一个客户端时
+      connect,addr = server.accept() #接收连接地址，把连接给到新的connect存储（三握手ok）
+      inputs.append(connect) #把三握手ok的套接字增加到连接列表
+      
+    else: #数据到达
+        data = sock.recv(1024)
+        
+        if data:
+          sock.send(data)
+        else:
+          inputs.remove(sock)
+          sock.close()
+         
+      
+      
