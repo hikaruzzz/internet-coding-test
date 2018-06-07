@@ -1,0 +1,39 @@
+#coding = utf-8
+from socket import *
+import random
+import time
+
+
+serverIp = "192.168.0.107" #注意这里用'' 不行
+
+serverPort = input("input server Port(default = 1818):")
+if serverPort == '': #判断是否默认
+
+    serverPort = int(1818) # 可用 int(num)
+else:
+    serverPort = int(serverPort) #可用 自身改int
+
+
+connectNum = input("input server time(default = 5):")
+#判断是否正确数字
+if connectNum == '':
+    connectNum = 5
+
+message = input("input message:")
+
+
+socketList = [] #存储客户端每个链接, 存入的是对象 √
+for i in range(int(connectNum)):
+    s = socket(AF_INET,SOCK_STREAM)
+    s.connect((serverIp,serverPort))
+    socketList.append(s)
+    print("connect success：%d"%i)
+
+for k in range(10):
+    for s in socketList:
+        s.send(b'boy next door')
+        s.send(message.encode('utf-8'))
+        print("send %d"%k)
+
+
+
