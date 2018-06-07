@@ -34,6 +34,6 @@ for k in range(10):
         s.send(b'boy next door')
         s.send(message.encode('utf-8'))
         print("send %d"%k)
-
+        # s.recv....
 
 
