@@ -1,0 +1,59 @@
+# 关键字：json 封装&解包 socket.sento和recvfrom的编码格式问题
+
+#coding = utf-8
+from socket import *
+import random
+import time
+import json
+
+#################################################   发包机    ############################
+serverIP =  '10.21.64.104'
+serverPort = 30808
+
+#设备属性
+ver = "1.0"
+cmd = "reqSignalIntensity"
+cSeq = 0 #  0 - 65535
+randomNum = -80 #随机RSSI 默认-80
+
+#请求reqSignalIntensity 参数
+Station_ID = "0x01" #Station设备自带ID号
+Beacon_ID = "0x2B0059"#Beacon设备自带ID
+udpSocket = socket(AF_INET, SOCK_DGRAM)
+
+inputNum = input("输入发送次数: ")
+for i in range(int(inputNum)):
+    # randomNum = random.randrange(-80,0) + random.randrange(-10,10) #随机方法1：-80到0随机
+    RSSI = str(randomNum) #信号强度 随机0-80，波动范围+ -10
+
+    messageSendRaw = {"header":{"ver":ver,"cmd":cmd,"cSeq":str(cSeq)},"body":{"Station_ID":Station_ID,"Beacon_ID":Beacon_ID,"RSSI":RSSI}}
+    messageSend = json.dumps(messageSendRaw)              # dumps: dict -> str   （封包）
+
+    udpSocket.sendto(messageSend.encode('utf-8'),(serverIP,serverPort))   # .encode('utf-8') 把字符串型 编码成bytes型
+
+# 以下为项目需求功能， 可不看
+    if randomNum > 0 or randomNum < -100:
+        randomNum = random.randrange(-80, 0)
+    else:
+        randomNum = randomNum + random.randrange(-10, 10)
+
+    if cSeq < 65535:
+        cSeq += 1
+    else:
+        cSeq = 0
+
+    time.sleep(1)
+
+udpSocket.close()
+
+
+#######################################################  收包机  ##########################
+#先建立recvMsg socket套接字
+while True:
+    recvMsg = socketRecv.recvfrom(1024)
+    #recvMsgDecoded = json.dumps(recvMsg,cls=MyEncoder)
+    #print(type(recvMsg))
+    recvMsgDecoded = json.loads(recvMsg[0])             #loads 把 str -> dict  （解包）
+    print(recvMsgDecoded,end= '\n')
+    print(recvMsgDecoded["header"]) #显示header内容
+    print(recvMsgDecoded[1]["body"]) #显示body
