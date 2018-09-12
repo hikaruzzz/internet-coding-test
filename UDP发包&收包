@@ -1,3 +1,4 @@
+
 # 关键字：json 封装&解包 socket.sento和recvfrom的编码格式问题
 
 #coding = utf-8
@@ -54,6 +55,8 @@ while True:
     #recvMsgDecoded = json.dumps(recvMsg,cls=MyEncoder)
     #print(type(recvMsg))
     recvMsgDecoded = json.loads(recvMsg[0])             #loads 把 str -> dict  （解包）
+    #此处recvMsg[0]，接收的是tuple，（str信息，[ip信息])
+    
     print(recvMsgDecoded,end= '\n')
     print(recvMsgDecoded["header"]) #显示header内容
     print(recvMsgDecoded[1]["body"]) #显示body
